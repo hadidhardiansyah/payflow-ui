@@ -1,0 +1,160 @@
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <img class="mx-auto h-48 w-auto" src="assets/logo.png" alt="payflow-logo" />
+    <h2
+      class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900"
+    >
+      Sign in to your account
+    </h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <form
+      [formGroup]="loginForm"
+      class="space-y-6"
+      action="#"
+      method="POST"
+      (ngSubmit)="onLogin()"
+    >
+      <div>
+        <label
+          for="companyId"
+          class="block text-sm/6 font-medium text-gray-900"
+        >
+          Company ID
+          <span class="text-blue-500 font-bold">*</span>
+        </label>
+        <div class="mt-2">
+          <input
+            type="text"
+            formControlName="companyId"
+            name="companyId"
+            id="companyId"
+            required
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+          />
+          <div
+            *ngIf="companyId?.touched && companyId?.invalid"
+            class="text-red-500 text-sm mt-1"
+          >
+            <div *ngIf="companyId?.errors?.['required']">
+              Company ID is required.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label for="username" class="block text-sm/6 font-medium text-gray-900">
+          Username
+          <span class="text-blue-500 font-bold">*</span>
+        </label>
+        <div class="mt-2">
+          <input
+            type="text"
+            formControlName="username"
+            name="username"
+            id="username"
+            required
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+          />
+          <div
+            *ngIf="username?.touched && username?.invalid"
+            class="text-red-500 text-sm mt-1"
+          >
+            <div *ngIf="username?.errors?.['required']">
+              Username is required.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex items-center justify-between">
+          <label
+            for="password"
+            class="block text-sm/6 font-medium text-gray-900"
+          >
+            Password
+            <span class="text-blue-500 font-bold">*</span>
+          </label>
+          <div class="text-sm">
+            <a
+              href="#"
+              class="font-semibold text-indigo-600 hover:text-indigo-500"
+              >Forgot password?</a
+            >
+          </div>
+        </div>
+        <div class="mt-2">
+          <input
+            type="password"
+            formControlName="password"
+            name="password"
+            id="password"
+            autocomplete="current-password"
+            required
+            class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:outline-indigo-600 sm:text-sm"
+          />
+          <div
+            *ngIf="password?.touched && password?.invalid"
+            class="text-red-500 text-sm mt-1"
+          >
+            <div *ngIf="password?.errors?.['required']">
+              Password is required.
+            </div>
+            <div
+              *ngIf="password?.errors?.['passwordComplexityValidator'] && password?.value"
+            >
+              Password must be at least 6 characters, contain uppercase,
+              lowercase, number, and special character.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          class="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
+          [ngClass]="{
+            'bg-indigo-600 hover:bg-indigo-500 cursor-pointer': loginForm.valid,
+            'bg-gray-400 cursor-not-allowed': !loginForm.valid
+          }"
+          [disabled]="!loginForm.valid"
+        >
+          Sign in
+        </button>
+      </div>
+    </form>
+
+    <p class="mt-10 text-center text-sm/6 text-gray-500">
+      Create an account
+      <button
+        (click)="onNavigateToRegister()"
+        class="font-semibold text-indigo-600 hover:text-indigo-500"
+      >
+        Register
+      </button>
+    </p>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div
+  *ngIf="showErrorModal"
+  class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+>
+  <div class="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+    <h2 class="text-lg font-bold text-red-600 mb-2">Error</h2>
+    <p class="text-gray-700 mb-4">{{ errorMessage }}</p>
+    <div class="flex justify-end">
+      <button
+        class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+        (click)="showErrorModal = false"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+</div>
