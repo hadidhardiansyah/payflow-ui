@@ -15,10 +15,18 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../service/auth.service';
 import { Router } from '@angular/router';
+import { ShareErrorModalComponent } from '../../../../shared/components/share-error-modal/share-error-modal.component';
 
 @Component({
   selector: 'app-activate-account',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    // Angular Modules
+    CommonModule,
+    ReactiveFormsModule,
+
+    // Angular Components
+    ShareErrorModalComponent,
+  ],
   templateUrl: './activate-account.component.html',
   styleUrl: './activate-account.component.scss',
   standalone: true,

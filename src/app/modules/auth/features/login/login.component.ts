@@ -10,10 +10,18 @@ import {
   Validators,
 } from '@angular/forms';
 import { passwordComplexityValidator } from '../../../../shared/validators/password.validator';
+import { ShareErrorModalComponent } from '../../../../shared/components/share-error-modal/share-error-modal.component';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    // Angular Modules
+    CommonModule,
+    ReactiveFormsModule,
+
+    // Angular Components
+    ShareErrorModalComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   standalone: true,
