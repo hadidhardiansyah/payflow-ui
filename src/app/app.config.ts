@@ -7,11 +7,13 @@ import { provideState, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { AuthEffects } from './modules/auth/store/effects/auth.effects';
 import { authReducer } from './modules/auth/store/reducers/auth.reducer';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
+    AuthGuard,
     provideHttpClient(),
     provideStore(),
     provideState('auth', authReducer),

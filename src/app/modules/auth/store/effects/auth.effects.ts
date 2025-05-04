@@ -36,6 +36,7 @@ export class AuthEffects {
         ofType(AuthActions.loginSuccess),
         tap(({ response }) => {
           localStorage.setItem('authToken', response.token);
+          localStorage.setItem('roles', JSON.stringify(response.roles));
           this.router.navigate(['dashboard']);
         })
       ),
