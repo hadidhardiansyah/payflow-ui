@@ -1,7 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { LoginModel, LoginResponseModel } from '../../models/login.model';
-import { AuthService } from '../../service/auth.service';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   FormControl,
@@ -11,6 +9,13 @@ import {
 } from '@angular/forms';
 import { passwordComplexityValidator } from '../../../../shared/validators/password.validator';
 import { ShareErrorModalComponent } from '../../../../shared/components/share-error-modal/share-error-modal.component';
+import { Store } from '@ngrx/store';
+import * as AuthActions from '../../store/actions/auth.action';
+import { Observable } from 'rxjs';
+import {
+  selectAuthError,
+  selectAuthLoading,
+} from '../../store/selectors/auth.selectors';
 
 @Component({
   selector: 'app-login',
@@ -27,6 +32,11 @@ import { ShareErrorModalComponent } from '../../../../shared/components/share-er
   standalone: true,
 })
 export class LoginComponent {
+  private store = inject(Store);
+
+  loading$: Observable<boolean> = this.store.select(selectAuthLoading);
+  errorMessage$: Observable<string | null> = this.store.select(selectAuthError);
+
   loginForm: FormGroup = new FormGroup({
     companyId: new FormControl('', Validators.required),
     username: new FormControl('', Validators.required),
@@ -36,11 +46,7 @@ export class LoginComponent {
     ]),
   });
 
-  showErrorModal: boolean = false;
-
-  errorMessage: string = '';
-
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
   get companyId() {
     return this.loginForm.get('companyId');
@@ -55,18 +61,14 @@ export class LoginComponent {
   }
 
   onLogin() {
-    const credentials: LoginModel = this.loginForm.value;
+    if (this.loginForm.invalid) return;
 
-    this.authService.login(credentials).subscribe({
-      next: (res: LoginResponseModel) => {
-        localStorage.setItem('authToken', res.token);
-        this.router.navigate(['dashboard']);
-      },
-      error: (err) => {
-        this.errorMessage = err.error.error.businessErrorDescription;
-        this.showErrorModal = true;
-      },
-    });
+    const credential = this.loginForm.value;
+    this.store.dispatch(AuthActions.login({ credential: credential }));
+  }
+
+  onCloseErrorModal() {
+    this.store.dispatch(AuthActions.clearAuthError());
   }
 
   onNavigateToRegister() {

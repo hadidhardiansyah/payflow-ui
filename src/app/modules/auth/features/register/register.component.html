@@ -160,12 +160,18 @@
         type="submit"
         class="flex w-full justify-center rounded-md px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2"
         [ngClass]="{
-          'bg-indigo-600 hover:bg-indigo-500 cursor-pointer': canSubmit,
-          'bg-gray-400 cursor-not-allowed': !canSubmit
+          'bg-indigo-600 hover:bg-indigo-500 cursor-pointer':
+            canSubmit && !(loading$ | async),
+          'bg-gray-400 cursor-not-allowed': !canSubmit || (loading$ | async)
         }"
-        [disabled]="!canSubmit"
+        [disabled]="!canSubmit || (loading$ | async)"
       >
-        Register
+        <ng-container *ngIf="!(loading$ | async); else loading">
+          Register
+        </ng-container>
+        <ng-template #loading>
+          <span class="animate-pulse">Loading...</span>
+        </ng-template>
       </button>
     </form>
 
@@ -183,7 +189,7 @@
 
 <!-- Error Modal -->
 <app-share-error-modal
-  [showModal]="showErrorModal"
-  [message]="errorMessage"
-  (closeModalEmitter)="showErrorModal = false"
+  [showModal]="(errorMessage$ | async) !== null"
+  [message]="(errorMessage$ | async) || ''"
+  (closeModalEmitter)="onCloseErrorModal()"
 ></app-share-error-modal>

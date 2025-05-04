@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
+  inject,
   OnInit,
   QueryList,
   ViewChildren,
@@ -13,9 +14,16 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { AuthService } from '../../service/auth.service';
 import { Router } from '@angular/router';
 import { ShareErrorModalComponent } from '../../../../shared/components/share-error-modal/share-error-modal.component';
+import { Store } from '@ngrx/store';
+import * as AuthActions from '../../store/actions/auth.action';
+import { Observable } from 'rxjs';
+import {
+  selectAuthError,
+  selectAuthLoading,
+  selectAuthMessage,
+} from '../../store/selectors/auth.selectors';
 
 @Component({
   selector: 'app-activate-account',
@@ -32,18 +40,20 @@ import { ShareErrorModalComponent } from '../../../../shared/components/share-er
   standalone: true,
 })
 export class ActivateAccountComponent implements OnInit {
+  private store = inject(Store);
+
+  loading$: Observable<boolean> = this.store.select(selectAuthLoading);
+  successMessage$: Observable<string | null> =
+    this.store.select(selectAuthMessage);
+  errorMessage$: Observable<string | null> = this.store.select(selectAuthError);
+
   form: FormGroup = new FormGroup({
     code: new FormArray([]),
   });
 
-  showErrorModal: boolean = false;
-
-  successMessage: string = '';
-  errorMessage: string = '';
-
   @ViewChildren('otpInput') inputs!: QueryList<ElementRef>;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     const codeArray = this.form.get('code') as FormArray;
@@ -94,17 +104,12 @@ export class ActivateAccountComponent implements OnInit {
   onActivate() {
     if (this.form.valid) {
       const code = this.codeArray.value.join('');
-
-      this.authService.activateAccount(code).subscribe({
-        next: (res: { status: string; message: string }) => {
-          this.successMessage = res?.message;
-        },
-        error: (err) => {
-          this.errorMessage = err.error.error.businessErrorDescription;
-          this.showErrorModal = true;
-        },
-      });
+      this.store.dispatch(AuthActions.activateAccount({ code }));
     }
+  }
+
+  onCloseErrorModal() {
+    this.store.dispatch(AuthActions.clearAuthError());
   }
 
   onNavigateToLogin() {

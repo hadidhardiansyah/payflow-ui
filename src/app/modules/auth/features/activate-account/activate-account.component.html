@@ -1,5 +1,5 @@
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-  <div *ngIf="successMessage !== ''; else beforeSubmit">
+  <div *ngIf="successMessage$ | async; else beforeSubmit">
     <div class="sm:mx-auto sm:w-full sm:max-w-sm text-center">
       <img
         class="mx-auto h-48 w-auto"
@@ -50,12 +50,18 @@
           type="submit"
           class="mt-6 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-500 transition"
           [ngClass]="{
-            'bg-indigo-600 hover:bg-indigo-500 cursor-pointer': form.valid,
-            'bg-gray-400 cursor-not-allowed': !form.valid
+            'bg-indigo-600 hover:bg-indigo-500 cursor-pointer':
+              form.valid && !(loading$ | async),
+            'bg-gray-400 cursor-not-allowed': !form.valid || (loading$ | async)
           }"
-          [disabled]="!form.valid"
+          [disabled]="!form.valid || (loading$ | async)"
         >
-          Activate
+          <ng-container *ngIf="!(loading$ | async); else loading">
+            Activate
+          </ng-container>
+          <ng-template #loading>
+            <span class="animate-pulse">Loading...</span>
+          </ng-template>
         </button>
       </form>
     </div>
@@ -64,7 +70,7 @@
 
 <!-- Error Modal -->
 <app-share-error-modal
-  [showModal]="showErrorModal"
-  [message]="errorMessage"
-  (closeModalEmitter)="showErrorModal = false"
+  [showModal]="(errorMessage$ | async) !== null"
+  [message]="(errorMessage$ | async) || ''"
+  (closeModalEmitter)="onCloseErrorModal()"
 ></app-share-error-modal>

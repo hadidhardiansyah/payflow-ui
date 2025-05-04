@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { AuthService } from '../../service/auth.service';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { RegisterModel } from '../../models/register.model';
 import {
@@ -12,6 +11,13 @@ import {
 import { CommonModule } from '@angular/common';
 import { passwordComplexityValidator } from '../../../../shared/validators/password.validator';
 import { ShareErrorModalComponent } from '../../../../shared/components/share-error-modal/share-error-modal.component';
+import { Store } from '@ngrx/store';
+import * as AuthActions from '../../store/actions/auth.action';
+import {
+  selectAuthError,
+  selectAuthLoading,
+} from '../../store/selectors/auth.selectors';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -28,6 +34,11 @@ import { ShareErrorModalComponent } from '../../../../shared/components/share-er
   standalone: true,
 })
 export class RegisterComponent {
+  private store = inject(Store);
+
+  loading$: Observable<boolean> = this.store.select(selectAuthLoading);
+  errorMessage$: Observable<string | null> = this.store.select(selectAuthError);
+
   allRoles: string[] = ['MAKER', 'APPROVER'];
 
   registerForm: FormGroup = new FormGroup({
@@ -41,11 +52,7 @@ export class RegisterComponent {
     roles: new FormArray([]),
   });
 
-  showErrorModal: boolean = false;
-
-  errorMessage: string = '';
-
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private router: Router) {}
 
   get companyId() {
     return this.registerForm.get('companyId');
@@ -88,20 +95,14 @@ export class RegisterComponent {
   }
 
   onRegister() {
-    const newData: RegisterModel = this.registerForm.value;
+    if (this.registerForm.invalid) return;
 
-    this.authService.register(newData).subscribe({
-      next: (res) => {
-        if (res.status == 'success') {
-          this.router.navigate(['auth', 'activate-account']);
-          this.registerForm.reset();
-        }
-      },
-      error: (err) => {
-        this.errorMessage = err.error.error.businessErrorDescription;
-        this.showErrorModal = true;
-      },
-    });
+    const newData: RegisterModel = this.registerForm.value;
+    this.store.dispatch(AuthActions.register({ newData: newData }));
+  }
+
+  onCloseErrorModal() {
+    this.store.dispatch(AuthActions.clearAuthError());
   }
 
   onNavigateToLogin() {
