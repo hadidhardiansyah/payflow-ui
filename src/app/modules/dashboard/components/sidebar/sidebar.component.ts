@@ -1,6 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import {
+  selectIsSidebarOpen,
+  selectIsTaskDropdownOpen,
+  selectIsTrxDropdownOpen,
+} from '../../store/selectors/sidebar.selectors';
+import {
+  closeTaskDropdown,
+  closeTrxDropdown,
+  toggleSidebar,
+  toggleTaskDropdown,
+  toggleTrxDropdown,
+} from '../../store/actions/sidebar.actions';
 
 @Component({
   selector: 'app-sidebar',
@@ -9,32 +23,40 @@ import { RouterModule } from '@angular/router';
   styleUrl: './sidebar.component.scss',
 })
 export class SidebarComponent {
-  isSidebarOpen: boolean = false;
-  isTrxDropdownOpen: boolean = false;
-  isTaskDropdownOpen: boolean = false;
+  private store = inject(Store);
+  private eRef = inject(ElementRef);
 
-  constructor(private eRef: ElementRef) {}
+  isSidebarOpen$: Observable<boolean> = this.store.select(selectIsSidebarOpen);
+  isTrxDropdownOpen$: Observable<boolean> = this.store.select(
+    selectIsTrxDropdownOpen
+  );
+  isTaskDropdownOpen$: Observable<boolean> = this.store.select(
+    selectIsTaskDropdownOpen
+  );
 
   toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
+    this.store.dispatch(toggleSidebar());
   }
 
   toggleTrxDropdown() {
-    this.isTrxDropdownOpen = !this.isTrxDropdownOpen;
+    this.store.dispatch(toggleTrxDropdown());
   }
 
   toggleTaskDropdown() {
-    this.isTaskDropdownOpen = !this.isTaskDropdownOpen;
+    this.store.dispatch(toggleTaskDropdown());
   }
 
   @HostListener('document:click', ['$event'])
   onClickOutside(event: MouseEvent) {
+    if (window.innerWidth > 768) return;
+
     if (
-      this.isSidebarOpen &&
       this.eRef.nativeElement &&
       !this.eRef.nativeElement.contains(event.target)
     ) {
-      this.isSidebarOpen = false;
+      this.store.dispatch(closeTrxDropdown());
+      this.store.dispatch(closeTaskDropdown());
+      this.store.dispatch(toggleSidebar());
     }
   }
 }

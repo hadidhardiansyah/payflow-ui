@@ -8,6 +8,7 @@ import { provideEffects } from '@ngrx/effects';
 import { AuthEffects } from './modules/auth/store/effects/auth.effects';
 import { authReducer } from './modules/auth/store/reducers/auth.reducer';
 import { AuthGuard } from './core/guards/auth.guard';
+import { sidebarReducer } from './modules/dashboard/store/reducers/sidebar.reducers';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,6 +18,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideStore(),
     provideState('auth', authReducer),
+    provideState('sidebar', sidebarReducer),
     provideEffects([AuthEffects]),
   ],
 };
