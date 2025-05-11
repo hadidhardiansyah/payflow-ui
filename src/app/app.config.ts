@@ -9,6 +9,8 @@ import { AuthEffects } from './modules/auth/store/effects/auth.effects';
 import { authReducer } from './modules/auth/store/reducers/auth.reducer';
 import { AuthGuard } from './core/guards/auth.guard';
 import { sidebarReducer } from './modules/dashboard/store/reducers/sidebar.reducers';
+import { invoiceReducer } from './modules/invoice/store/reducers/invoice.reducer';
+import { InvoiceEffects } from './modules/invoice/store/effects/invoice.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,8 +19,12 @@ export const appConfig: ApplicationConfig = {
     AuthGuard,
     provideHttpClient(),
     provideStore(),
-    provideState('auth', authReducer),
-    provideState('sidebar', sidebarReducer),
+    provideStore({
+      auth: authReducer,
+      sidebar: sidebarReducer,
+      invoice: invoiceReducer,
+    }),
     provideEffects([AuthEffects]),
+    provideEffects([InvoiceEffects]),
   ],
 };
