@@ -10,10 +10,16 @@ import {
   selectLoading,
 } from '../../store/selectors/invoice.selectors';
 import { CommonModule } from '@angular/common';
+import { ManualInputComponent } from '../manual-input/manual-input.component';
 
 @Component({
   selector: 'app-invoice-list',
-  imports: [CommonModule, SidebarComponent, ShareTableComponent],
+  imports: [
+    CommonModule,
+    SidebarComponent,
+    ShareTableComponent,
+    ManualInputComponent,
+  ],
   templateUrl: './invoice-list.component.html',
   styleUrl: './invoice-list.component.scss',
   standalone: true,
@@ -24,7 +30,17 @@ export class InvoiceListComponent implements OnInit {
   invoices$ = this.store.select(selectAllInvoices);
   loading$ = this.store.select(selectLoading);
 
+  showSideSheet = false;
+
   ngOnInit(): void {
     this.store.dispatch(fetchInvoices());
+  }
+
+  openSideSheet() {
+    this.showSideSheet = true;
+  }
+
+  closeSideSheet() {
+    this.showSideSheet = false;
   }
 }

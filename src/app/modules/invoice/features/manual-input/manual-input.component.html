@@ -1,1 +1,59 @@
-<p>manual-input works!</p>
+<div
+  class="fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity"
+  *ngIf="showSideSheet"
+  (click)="closeSideSheet()"
+></div>
+
+<!-- Side Sheet -->
+<div
+  class="fixed right-0 top-0 h-full w-[400px] bg-white shadow-lg z-50 transition-transform duration-300"
+  [class.translate-x-full]="!showSideSheet"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between p-4 border-b">
+    <h2 class="text-lg font-semibold">Manual Input Invoice</h2>
+    <button
+      (click)="closeSideSheet()"
+      class="text-gray-500 hover:text-gray-700"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- Form Body -->
+  <div class="p-4 space-y-4">
+    <label class="block">
+      <span class="text-gray-700">Invoice No</span>
+      <input type="text" class="mt-1 block w-full border rounded p-2" />
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Company</span>
+      <input type="text" class="mt-1 block w-full border rounded p-2" />
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Amount</span>
+      <input type="number" class="mt-1 block w-full border rounded p-2" />
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Maturity Date</span>
+      <input type="date" class="mt-1 block w-full border rounded p-2" />
+    </label>
+
+    <label class="block">
+      <span class="text-gray-700">Notes</span>
+      <textarea
+        rows="3"
+        class="mt-1 block w-full border rounded p-2"
+      ></textarea>
+    </label>
+
+    <button
+      class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700"
+    >
+      Submit
+    </button>
+  </div>
+</div>

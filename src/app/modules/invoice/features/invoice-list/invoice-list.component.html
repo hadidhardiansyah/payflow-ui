@@ -5,6 +5,7 @@
     <div class="flex gap-5">
       <button
         class="py-2 px-6 bg-[#1f2937] font-semibold text-white rounded-md"
+        (click)="openSideSheet()"
       >
         Manual Input
       </button>
@@ -22,3 +23,7 @@
     <app-share-table [invoices]="invoices" />
   </ng-container>
 </div>
+<app-manual-input
+  [showSideSheet]="showSideSheet"
+  (closed)="closeSideSheet()"
+></app-manual-input>
